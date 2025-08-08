@@ -1,35 +1,43 @@
+# crud_livro.py
 from db_config import conectar
 
-def criar_categoria(nome, descricao):
+def criar_livro(titulo, autor, isbn=None, sinopse=None, capa=None, quantidade=1, categoria_id=None):
     try:
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO Categoria (nome, descricao) VALUES (%s, %s)", (nome, descricao))
+        cursor.execute(
+            "INSERT INTO Livro (titulo, autor, isbn, sinopse, capa, quantidade, categoria_id) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (titulo, autor, isbn, sinopse, capa, quantidade, categoria_id)
+        )
         conn.commit()
-        return{"status": "sucesso", "mensagem":"Categoria criada com sucesso!"}
+        return{"status": "sucesso", "mensagem":"livro criado com sucesso.", "id":cursor.lastrowid}
     except Exception as e:
         return{"status":"erro", "mensagem": str(e)}
     finally:
-        conn.close()
+        try: conn.close()
+        except: pass
     
+def author_or_none(a):
+    return a if a is not None else ""
 
-def listar_categorias():
+def listar_livros():
     try:
         conn = conectar()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT *FROM Categoria")
+        cursor.execute("SELECT *FROM Livro")
         return cursor.fetchall()
     except Exception as e:
         return{"status":"erro", "mensagem": str(e)}
     finally:
-        conn.close()
+        try:conn.close()
+        except: pass
        
-def atualizar_categoria(id_categoria, novo_nome, nova_descricao):
+def obter_livro(id_livro):
     try:
         conn = conectar()
-        cursor = conn.cursor()
-        cursor.execute("UPDATE Categoria SET nome=%s, descricao=%s WHERE id=%s",
-                        (novo_nome, nova_descricao, id_categoria))
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Livro WHERE id=%s", (id_livro))
+        row = cursor.fetchone()
         conn.commit()
         if cursor.rowcount == 0:
             return{"status": "aviso", "mensagem":"Nenhuma categoria encontrada para atualizar."}
