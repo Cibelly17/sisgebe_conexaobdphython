@@ -1,6 +1,7 @@
 #gitapp.py
 
 from db_config import conectar
+from crud import categpria
 
 def main() :
     conexao = conectar
@@ -23,3 +24,24 @@ def main() :
 
 if __name__ == "__main__":
     main()
+
+def menu():
+    while True:
+        print("\n=== MENU SGB ===")
+        print("1. Criar Categoria")
+        print("2. Listar Categorias")
+        print("3. Atualizar Categoria")
+        print("4. Deletar Categoria")
+        print("0. Sair")
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            nome = input("Nome da categoria: ")
+            descricao = input("Descrição: ")
+            categpria.criar_categoria(nome, descricao)
+        elif opcao == "2":
+            cats = categpria.listar_categorias()
+            for c in cats:
+                print(f"{c['id']} - {c['nome']} ({['descricao']})")
+        elif opcao == "3":
+            id_cat = int(input("ID da categoria"))
