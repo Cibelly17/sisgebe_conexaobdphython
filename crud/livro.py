@@ -38,25 +38,44 @@ def obter_livro(id_livro):
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Livro WHERE id=%s", (id_livro))
         row = cursor.fetchone()
-        conn.commit()
-        if cursor.rowcount == 0:
-            return{"status": "aviso", "mensagem":"Nenhuma categoria encontrada para atualizar."}
-        return{"satus":"sucsso","mensagem":"Categoria atualizada!"}
+        if not row:
+            return{"status": "aviso", "mensagem":"Livro não encontrado."}
+        return row
     except Exception as e:
         return{"status":"erro", "mensagem": str(e)}
     finally:
-        conn.close()
+        try: conn.close()
+        except: pass
 
-def deletar_categoria(id_categoria):
+def atualizar_livro(id_livro, titulo, autor, isbn, sinopse, capa, quantidade, categoria_id):
     try:
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM Categoria is WHERE id=%s", (id_categoria,))
+        cursor.execute(
+           "UPDATE Livro SET titulo=%s, autor=%s, isbn=%s, sinopse=%s, capa=%s, quantidade=%s, categoria_id=%s WHERE id=%s "
+           (titulo, autor, isbn, sinopse, capa, quantidade, categoria_id)
+        )
         conn.commit()
-        if cursor.rowcount == 0:
-            return{"status":"aviso", "mensagem":"Nenhuma categoria encontrada para deletar."}
-        return{"status":"sucesso", "mensagem":"Categoria excluida!"}
+        if cursor.rowcount ==0:
+            return{"status":"aviso", "mensagem":"Nenhum livro encontrado para atualizar."}
+        return{"status":"sucesso", "mensagem":"Liro atualizado com sucesso."}
     except Exception as e:
         return{"status":"erro", "mensagem": str(e)}
     finally:
-        conn.close()
+        try: conn.close()
+        except: pass 
+
+def deletar_livro(id_livro):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute("DELETE * FROM Livro WHERE id=%s", (id_livro,))
+        conn.commit()
+        if cursor.rowcount==0:
+            return{"status": "aviso", "mensagem":"Nenhum livro não encontrado para deletar."}
+        return{"status": "aviso", "mensagem":"livro excluído com sucesso."}
+    except Exception as e:
+        return{"status":"erro", "mensagem": str(e)}
+    finally:
+        try: conn.close()
+        except: pass
