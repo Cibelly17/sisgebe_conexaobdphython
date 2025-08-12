@@ -1,18 +1,18 @@
-#gitapp.py
+# app.py
 
 from db_config import conectar
-from crud import categpria
+from crud import categoria
 
-def main() :
-    conexao = conectar
+def main():
+    conexao= conectar()
     if conexao:
         try:
-            cursor = conexao.cursor ()
-            cursor.execute("SELECT * FROM livros;") # Exemplo de consulta simples
+            cursor = conexao.cursor()
+            cursor.execute("SELECT * FROM livros;")  # Exemplo de consulta simples
 
             resultados = cursor.fetchall()
 
-            print("\nLivros cadastrados")
+            print("\nLivros cadastrados:")
             for linha in resultados:
                 print(linha)
 
@@ -22,7 +22,7 @@ def main() :
             conexao.close()
             print("\nConexão encerrada.")
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
 
 def menu():
@@ -38,10 +38,23 @@ def menu():
         if opcao == "1":
             nome = input("Nome da categoria: ")
             descricao = input("Descrição: ")
-            categpria.criar_categoria(nome, descricao)
+            categoria.criar_categoria(nome, descricao)
         elif opcao == "2":
-            cats = categpria.listar_categorias()
+            cats = categoria.listar_categorias()
             for c in cats:
-                print(f"{c['id']} - {c['nome']} ({['descricao']})")
+                print(f"{c['id']} - {c['nome']} ({c['descricao']})")
         elif opcao == "3":
-            id_cat = int(input("ID da categoria"))
+            id_cat = int(input("ID da categoria: "))
+            nome = input("Novo nome: ")
+            descricao = input("Nova descrição: ")
+            categoria.atualizar_categoria(id_cat, nome, descricao)
+        elif opcao == "4":
+            id_cat = int(input("ID da categoria: "))
+            categoria.deletar_categoria(id_cat)
+        elif opcao == "0":
+            break
+        else:
+            print("Opção inválida!")
+
+if _name_ == "_main_":
+    menu()

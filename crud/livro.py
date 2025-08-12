@@ -58,7 +58,7 @@ def atualizar_livro(id_livro, titulo, autor, isbn, sinopse, capa, quantidade, ca
         conn.commit()
         if cursor.rowcount ==0:
             return{"status":"aviso", "mensagem":"Nenhum livro encontrado para atualizar."}
-        return{"status":"sucesso", "mensagem":"Liro atualizado com sucesso."}
+        return{"status":"sucesso", "mensagem":"Livro atualizado com sucesso."}
     except Exception as e:
         return{"status":"erro", "mensagem": str(e)}
     finally:
