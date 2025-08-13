@@ -41,7 +41,7 @@ def obter_aluno(id_livro):
         cursor.execute("SELECT id, nome, email, serie, status FROM Aluno WHERE id=%s", (id_aluno,))
         row = cursor.fetchall
         if not row: 
-             return{"status": "aviso", "mensagem":"Aluno não encontrado."}
+            return{"status": "aviso", "mensagem":"Aluno não encontrado."}
         return row 
     except Exception as e:
         return{"status":"erro", "mensagem": str(e)} 
@@ -71,5 +71,26 @@ def atualizar_aluno(id_aluno, nome=None, email=None, senha=None, serie=None, sta
         valores.append(id_aluno)
         cursor.execute(sql, tuple(valores))
         conn.commit()
-        if cursor.rowcount==0:
-        
+        if cursor.rowcount==0: 
+            return{"status": "aviso", "mensagem":"Aluno não encontrado para atualizar."}
+        return{"status": "sucesso", "mensagem":"Aluno atualizado."}
+    except Exception as e:
+            return{"status":"erro", "mensagem": str(e)}
+    finally: 
+        try: conn.close()
+        except: pass
+
+def deletar_aluno(id_aluno):
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Aluno WHERE id=%s", (id_aluno,))
+        conn.commit()
+        if cursor.rowcount==0: 
+            return{"status": "aviso", "mensagem":"Aluno não encontrado."}
+        return{"status": "sucesso", "mensagem":"Aluno excluído."}
+    except Exception as e:
+        return{"status":"erro", "mensagem": str(e)}
+    finally: 
+        try: conn.close()
+        except: pass
