@@ -7,16 +7,19 @@ def criar_livro(titulo, autor, isbn=None, sinopse=None, capa=None, quantidade=1,
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO Livro (titulo, autor, isbn, sinopse, capa, quantidade, categoria_id) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (titulo, autor, isbn, sinopse, capa, quantidade, categoria_id)
+            (titulo, author_or_none(autor), isbn, sinopse, capa, quantidade, categoria_id)
         )
         conn.commit()
-        return{"status": "sucesso", "mensagem":"livro criado com sucesso.", "id":cursor.lastrowid}
+        return {"status":"sucesso","mensagem":"Livro criado com sucesso.","id":cursor.lastrowid}
     except Exception as e:
-        return{"status":"erro", "mensagem": str(e)}
+        return {"status":"erro","mensagem":str(e)}
     finally:
-        try: conn.close()
-        except: pass
-    
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception as e:
+                print(f"Erro ao fechar conexão:{e}")
+
 def author_or_none(a):
     return a if a is not None else ""
 
@@ -24,58 +27,70 @@ def listar_livros():
     try:
         conn = conectar()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT *FROM Livro")
+        cursor.execute("SELECT * FROM Livro")
         return cursor.fetchall()
     except Exception as e:
-        return{"status":"erro", "mensagem": str(e)}
+        return {"status":"erro","mensagem":str(e)}
     finally:
-        try:conn.close()
-        except: pass
-       
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception as e:
+                print(f"Erro ao fechar conexão:{e}")
+
 def obter_livro(id_livro):
     try:
         conn = conectar()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM Livro WHERE id=%s", (id_livro))
+        cursor.execute("SELECT * FROM Livro WHERE id=%s", (id_livro,))
         row = cursor.fetchone()
         if not row:
-            return{"status": "aviso", "mensagem":"Livro não encontrado."}
+            return {"status":"aviso","mensagem":"Livro não encontrado."}
         return row
     except Exception as e:
-        return{"status":"erro", "mensagem": str(e)}
+        return {"status":"erro","mensagem":str(e)}
     finally:
-        try: conn.close()
-        except: pass
+       if conn is not None:
+            try:
+                conn.close()
+            except Exception as e:
+                print(f"Erro ao fechar conexão:{e}")
 
 def atualizar_livro(id_livro, titulo, autor, isbn, sinopse, capa, quantidade, categoria_id):
     try:
         conn = conectar()
         cursor = conn.cursor()
         cursor.execute(
-           "UPDATE Livro SET titulo=%s, autor=%s, isbn=%s, sinopse=%s, capa=%s, quantidade=%s, categoria_id=%s WHERE id=%s "
-           (titulo, autor, isbn, sinopse, capa, quantidade, categoria_id)
+            "UPDATE Livro SET titulo=%s, autor=%s, isbn=%s, sinopse=%s, capa=%s, quantidade=%s, categoria_id=%s WHERE id=%s",
+            (titulo, autor, isbn, sinopse, capa, quantidade, categoria_id, id_livro)
         )
         conn.commit()
-        if cursor.rowcount ==0:
-            return{"status":"aviso", "mensagem":"Nenhum livro encontrado para atualizar."}
-        return{"status":"sucesso", "mensagem":"Livro atualizado com sucesso."}
+        if cursor.rowcount==0:
+            return {"status":"aviso","mensagem":"Nenhum livro encontrado para atualizar."}
+        return {"status":"sucesso","mensagem":"Livro atualizado com sucesso."}
     except Exception as e:
-        return{"status":"erro", "mensagem": str(e)}
+        return {"status":"erro","mensagem":str(e)}
     finally:
-        try: conn.close()
-        except: pass 
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception as e:
+                print(f"Erro ao fechar conexão:{e}")
 
 def deletar_livro(id_livro):
     try:
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("DELETE * FROM Livro WHERE id=%s", (id_livro,))
+        cursor.execute("DELETE FROM Livro WHERE id=%s", (id_livro,))
         conn.commit()
         if cursor.rowcount==0:
-            return{"status": "aviso", "mensagem":"Nenhum livro não encontrado para deletar."}
-        return{"status": "aviso", "mensagem":"livro excluído com sucesso."}
+            return {"status":"aviso","mensagem":"Nenhum livro encontrado para deletar."}
+        return {"status":"sucesso","mensagem":"Livro excluído com sucesso."}
     except Exception as e:
-        return{"status":"erro", "mensagem": str(e)}
+        return {"status":"erro","mensagem":str(e)}
     finally:
-        try: conn.close()
-        except: pass
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception as e:
+                print(f"Erro ao fechar conexão:{e}")
